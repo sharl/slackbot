@@ -19,7 +19,7 @@ from websocket._exceptions import WebSocketConnectionClosedException
 import requests
 # python 2.7.9 未満は insecure なので抑止
 requests.packages.urllib3.disable_warnings()
-from bs4 import BeautifulSoup
+#from bs4 import BeautifulSoup
 
 #
 # Slack bot setup
@@ -69,6 +69,7 @@ def parse(sc, data):
         if item_type == 'message' and item.get('subtype', None) is None:
             text = item['text']
             ts = item['ts']
+            thread_ts = item.get('thread_ts')
 
             ############################################################
             print('%s %s> %s: %s' % (
@@ -79,6 +80,37 @@ def parse(sc, data):
             ############################################################
 
             # ここから機能
+
+            ############################################################
+            # はむhelp
+            ############################################################
+            if text.strip().replace(' ', '') in ['help&gt;はむ', 'help＞はむ']:
+                data = {
+                    'username': username,
+                    'icon_emoji': icon_emoji,
+                    'channel': channel_id,
+                    'text': '''はむ？ : スレッドに参上
+アメダス[観測地点]＞はむ : アメダスでの現在の情報を表示''',
+                }
+                if thread_ts:
+                    data['thread_ts'] = thread_ts
+                sc.api_call('chat.postMessage', **data)
+                time.sleep(1)
+
+            ############################################################
+            # はむをスレッドに呼ぶ
+            ############################################################
+            if text in ['はむ?', 'はむ？']:
+                if not thread_ts:
+                    data = {
+                        'username': username,
+                        'icon_emoji': icon_emoji,
+                        'channel': channel_id,
+                        'text': 'ほえ',
+                        'thread_ts': ts,
+                    }
+                    sc.api_call('chat.postMessage', **data)
+                    time.sleep(1)
 
             ############################################################
             # アメダス札幌[＞>]はむ -> 「札幌」を取り出して実行
@@ -95,6 +127,8 @@ def parse(sc, data):
                     'channel': channel_id,
                     'text': amedas,
                 }
+                if thread_ts:
+                    data['thread_ts'] = thread_ts
                 sc.api_call('chat.postMessage', **data)
                 time.sleep(1)
 
