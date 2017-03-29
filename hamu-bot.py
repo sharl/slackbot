@@ -93,6 +93,7 @@ def parse(sc, data):
                     'icon_emoji': icon_emoji,
                     'channel': channel_id,
                     'text': '''はむ？ : スレッドに参上
+<キーワード>画像＞はむ : いらすとやから画像を検索
 アメダス[観測地点]＞はむ : アメダスでの現在の情報を表示''',
                 }
                 if thread_ts:
