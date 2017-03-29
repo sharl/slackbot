@@ -3,15 +3,18 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import sys
+#import sys
 import os
 import time
 from datetime import datetime
-import re
+#import re
 import json
-from urlparse import urlparse, urlunparse
-import urllib
+#from urlparse import urlparse, urlunparse
+#import urllib
 import subprocess
+from random import random
+from urllib import quote
+import HTMLParser
 
 from slackclient import SlackClient
 from websocket._exceptions import WebSocketConnectionClosedException
@@ -19,7 +22,7 @@ from websocket._exceptions import WebSocketConnectionClosedException
 import requests
 # python 2.7.9 未満は insecure なので抑止
 requests.packages.urllib3.disable_warnings()
-#from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup
 
 #
 # Slack bot setup
@@ -111,6 +114,66 @@ def parse(sc, data):
                     }
                     sc.api_call('chat.postMessage', **data)
                     time.sleep(1)
+
+            ############################################################
+            # うどん画像[＞>]はむ -> 「うどん」を取り出して画像検索
+            ############################################################
+            img_suffix1 = '画像＞はむ'
+            img_suffix2 = '画像&gt;はむ'
+            if text.endswith(img_suffix1) or text.endswith(img_suffix2):
+                word = text.replace(img_suffix1, '').replace(img_suffix2, '').replace('　', '').strip()
+                if len(word) == 0:
+                    continue
+
+                url = 'http://www.irasutoya.com/search?q=' + quote(word.encode('utf8'))
+
+                r = None
+                try:
+                    r = requests.get(url, timeout=3)
+                except Exception as e:
+                    print(e)
+                    continue
+
+                if r and r.status_code == 200:
+                    soup = BeautifulSoup(r.content, 'html.parser')
+
+                    results = []
+                    _as = soup.find_all(class_='boxim')
+                    for _a in _as:
+                        link = _a.find('a').get('href').strip()
+                        pics = _a.text.strip()
+                        key = 'document.write(bp_thumbnail_resize'
+                        offset = 0
+                        if key in pics:
+                            offset = pics.index(key)
+                            tmp = pics[offset:].split('"')
+                            pic = tmp[1].replace('s72-c', 's400')
+                            dsc = HTMLParser.HTMLParser().unescape(tmp[3])
+                            attachment = {
+                                'fallback': '[{}({})] {}'.format(dsc, len(_as), link),
+                                'title': '[{}({})] {}'.format(word, len(_as), dsc),
+                                'title_link': link,
+                                'image_url': pic,
+                            }
+                            results.append(attachment)
+                    attachment = {
+                        "fallback": "{} ハズレ".format(word),
+                        "title": word,
+                        "text": "ハズレ"
+                    }
+                    if results:
+                        attachment = results[int(len(results) * random())]
+
+                data = {
+                    'username': 'gazou ' + username,
+                    'icon_emoji': icon_emoji,
+                    'channel': channel_id,
+                    'attachments': json.dumps([attachment]),
+                }
+                if thread_ts:
+                    data['thread_ts'] = thread_ts
+                sc.api_call('chat.postMessage', **data)
+                time.sleep(1)
 
             ############################################################
             # アメダス札幌[＞>]はむ -> 「札幌」を取り出して実行
