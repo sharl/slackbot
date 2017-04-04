@@ -3,14 +3,14 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-#import sys
+# import sys
 import os
 import time
 from datetime import datetime
-#import re
+import re
 import json
-#from urlparse import urlparse, urlunparse
-#import urllib
+from urlparse import urlparse
+# import urllib
 import subprocess
 from random import random
 from urllib import quote
@@ -45,7 +45,7 @@ def parse(sc, data):
         if item_type in ['reconnect_url', 'presence_change', 'user_typing']:
             continue
 
-        #print('item', item)
+        # print('item', item)
         #
         # detect channel
         #
@@ -195,6 +195,34 @@ def parse(sc, data):
                     data['thread_ts'] = thread_ts
                 sc.api_call('chat.postMessage', **data)
                 time.sleep(1)
+
+            ############################################################
+            # ようつべ、ニコニコ動画のURLをirc.haun.orgに転送する
+            ############################################################
+            urls = re.findall('https?://(?:[^>]+)', text)
+            if True:
+                for url in urls:
+                    scheme, netloc, path, params, query, fragment = urlparse(url)
+                    if netloc in ['www.youtube.com', 'youtu.be', 'www.nicovideo.jp']:
+                        if channel_ids[channel_id] == 'ようつべ':
+                            res = subprocess.check_output(['whisper', '-c', 'youtube', '-p', '@{}'.format(user_ids[user_id]), url]).decode('utf8')
+                            data = {
+                                'username': username,
+                                'icon_emoji': icon_emoji,
+                                'channel': channel_id,
+                                'text': 'failed: {} : {}'.format(res, url),
+                            }
+                            if res == '':
+                                data = {
+                                    'username': username,
+                                    'icon_emoji': icon_emoji,
+                                    'channel': channel_id,
+                                    'text': 'transfer done: {}'.format(url),
+                                }
+                            if thread_ts:
+                                data['thread_ts'] = thread_ts
+                            sc.api_call('chat.postMessage', **data)
+                            time.sleep(1)
 
 
 if __name__ == '__main__':
