@@ -28,7 +28,8 @@ from bs4 import BeautifulSoup
 # Slack bot setup
 #
 ENVNAME = 'SLACK_TOKEN'
-token = os.environ[ENVNAME] if ENVNAME in os.environ else None
+token = os.environ.get(ENVNAME, None)
+ikachan = os.environ.get('IKACHAN', None)
 
 username = 'hamu'
 icon_emoji = ':hamster:'
@@ -75,11 +76,10 @@ def parse(sc, data):
             thread_ts = item.get('thread_ts')
 
             ############################################################
-            print('%s %s> %s: %s' % (
-                    datetime.fromtimestamp(float(ts)).strftime('%H:%M:%S'),
-                    channel_ids[channel_id],
-                    user_ids[user_id],
-                    text))
+            print('{} {}> {}: {}'.format(datetime.fromtimestamp(float(ts)).strftime('%H:%M:%S'),
+                                         channel_ids[channel_id],
+                                         user_ids[user_id],
+                                         text))
             ############################################################
 
             # ここから機能
@@ -196,33 +196,35 @@ def parse(sc, data):
                 sc.api_call('chat.postMessage', **data)
                 time.sleep(1)
 
-            ############################################################
-            # ようつべ、ニコニコ動画のURLをirc.haun.orgに転送する
-            ############################################################
+            # URI処理
             urls = re.findall('https?://(?:[^>]+)', text)
-            if True:
-                for url in urls:
-                    scheme, netloc, path, params, query, fragment = urlparse(url)
-                    if netloc in ['www.youtube.com', 'youtu.be', 'www.nicovideo.jp']:
-                        if channel_ids[channel_id] == 'ようつべ':
-                            res = subprocess.check_output(['whisper', '-c', 'youtube', '-p', '@{}'.format(user_ids[user_id]), url]).decode('utf8')
+            for url in urls:
+                scheme, netloc, path, params, query, fragment = urlparse(url)
+                ############################################################
+                # ようつべ、ニコニコ動画のURLをirc.haun.orgに転送する
+                ############################################################
+                if netloc in ['www.youtube.com', 'youtu.be', 'www.nicovideo.jp']:
+                    if channel_ids[channel_id] == 'ようつべ' and ikachan is not None:
+                        res = requests.get(ikachan, params={'channel': '#ようつべ',
+                                                            'message': '@{} {}'.format(user_ids[user_id], url),
+                                                            })
+                        data = {
+                            'username': username,
+                            'icon_emoji': icon_emoji,
+                            'channel': channel_id,
+                            'text': 'failed: {} : {}'.format(res, url),
+                        }
+                        if res.status_code == 200:
                             data = {
                                 'username': username,
                                 'icon_emoji': icon_emoji,
                                 'channel': channel_id,
-                                'text': 'failed: {} : {}'.format(res, url),
+                                'text': 'transfer done: {}'.format(url),
                             }
-                            if res == '':
-                                data = {
-                                    'username': username,
-                                    'icon_emoji': icon_emoji,
-                                    'channel': channel_id,
-                                    'text': 'transfer done: {}'.format(url),
-                                }
-                            if thread_ts:
-                                data['thread_ts'] = thread_ts
-                            sc.api_call('chat.postMessage', **data)
-                            time.sleep(1)
+                        if thread_ts:
+                            data['thread_ts'] = thread_ts
+                        sc.api_call('chat.postMessage', **data)
+                        time.sleep(1)
 
 
 if __name__ == '__main__':
