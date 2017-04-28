@@ -203,7 +203,7 @@ def parse(sc, data):
                 ############################################################
                 # ようつべ、ニコニコ動画のURLをirc.haun.orgに転送する
                 ############################################################
-                if netloc in ['www.youtube.com', 'youtu.be', 'www.nicovideo.jp']:
+                if netloc in ['www.youtube.com', 'youtu.be', 'www.nicovideo.jp', 'sp.nicovideo.jp']:
                     if channel_ids[channel_id] == 'ようつべ' and ikachan is not None:
                         res = requests.get(ikachan, params={'channel': '#ようつべ',
                                                             'message': '@{} {}'.format(user_ids[user_id], url),
