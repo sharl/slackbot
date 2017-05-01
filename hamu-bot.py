@@ -157,13 +157,37 @@ def parse(sc, data):
                                 'image_url': pic,
                             }
                             results.append(attachment)
-                    attachment = {
-                        "fallback": "{} ハズレ".format(word),
-                        "title": word,
-                        "text": "ハズレ"
-                    }
-                    if results:
-                        attachment = results[int(len(results) * random())]
+
+                    if not results:
+                        # マストドン画像検索
+                        url = 'https://donsearch.me/?q=' + quote(word.encode('utf8'))
+                        r = None
+                        try:
+                            r = requests.get(url, timeout=3)
+                        except Exception as e:
+                            print(e)
+
+                        if r and r.status_code == 200:
+                            soup = BeautifulSoup(r.content, 'html.parser')
+                            imgs = soup.find_all(class_='media')
+                            for img in imgs:
+                                pic = img.get('data-echo', '')
+                                if pic:
+                                    attachment = {
+                                        'fallback': '[{}({})] {}'.format(word, len(imgs), pic),
+                                        'title': '[{}({})]'.format(word, len(imgs)),
+                                        'title_link': pic,
+                                        'image_url': pic,
+                                    }
+                                    results.append(attachment)
+
+                        attachment = {
+                            "fallback": "{} ハズレ".format(word),
+                            "title": word,
+                            "text": "ハズレ"
+                        }
+                        if results:
+                            attachment = results[int(len(results) * random())]
 
                 data = {
                     'username': 'gazou ' + username,
