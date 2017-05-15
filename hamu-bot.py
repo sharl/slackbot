@@ -225,13 +225,13 @@ def parse(sc, data):
             for url in urls:
                 scheme, netloc, path, params, query, fragment = urlparse(url)
                 ############################################################
-                # ようつべ、ニコニコ動画のURLをirc.haun.orgに転送する
+                # ようつべ、ニコニコ動画のURLをIRCに転送する
                 ############################################################
                 if netloc in ['www.youtube.com', 'youtu.be', 'www.nicovideo.jp', 'sp.nicovideo.jp']:
                     if channel_ids[channel_id] == 'ようつべ' and ikachan is not None:
-                        res = requests.get(ikachan, params={'channel': '#ようつべ',
-                                                            'message': '@{} {}'.format(user_ids[user_id], url),
-                                                            })
+                        res = requests.post(ikachan, data={'channel': '#ようつべ',
+                                                           'message': '@{} {}'.format(user_ids[user_id], url),
+                                                           })
                         data = {
                             'username': username,
                             'icon_emoji': icon_emoji,
