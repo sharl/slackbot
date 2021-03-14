@@ -6,6 +6,7 @@ from __future__ import unicode_literals
 # import sys
 import os
 import time
+import socket
 from datetime import datetime
 import re
 import json
@@ -48,16 +49,6 @@ def parse(sc, data):
 
         # print('item', item)
         #
-        # detect channel
-        #
-        channel_id = item.get('channel')
-        if isinstance(channel_id, (str, unicode)) and channel_id not in channel_ids:
-            chan = sc.api_call('channels.info', channel=channel_id)
-            if chan['ok'] is True:
-                channel_name = chan.get('channel', {}).get('name')
-                if channel_name is not None:
-                    channel_ids[channel_id] = channel_name
-        #
         # detect user
         #
         user_id = item.get('user')
@@ -67,6 +58,32 @@ def parse(sc, data):
                 user_name = user.get('user', {}).get('name')
                 if user_name is not None:
                     user_ids[user_id] = user_name
+        #
+        # detect channel
+        #
+        channel_id = item.get('channel')
+        if isinstance(channel_id, (str, unicode)) and channel_id not in channel_ids:
+            if channel_id.startswith('C'):
+                # channel
+                chan = sc.api_call('channels.info', channel=channel_id)
+                if chan['ok'] is True:
+                    channel_name = chan.get('channel', {}).get('name')
+                    if channel_name is not None:
+                        channel_ids[channel_id] = channel_name
+            elif channel_id.startswith('D'):
+                # im
+                user_name = user_ids.get(user_id, '???')
+                channel_ids[channel_id] = user_name
+            elif channel_id.startswith('G'):
+                # group im (mpim)
+                group = sc.api_call('groups.info', channel=channel_id)
+                if group['ok'] is True:
+                    channel_name = group.get('group', {}).get('name')
+                    if channel_name is not None:
+                        channel_ids[channel_id] = channel_name
+
+            if channel_id not in channel_ids:
+                channel_ids[channel_id] = channel_id
         #
         # parse message text
         #
@@ -87,14 +104,14 @@ def parse(sc, data):
             ############################################################
             # はむhelp
             ############################################################
-            if text.strip().replace(' ', '') in ['help&gt;はむ', 'help＞はむ']:
+            if text.strip().replace(' ', '') in ['help&gt;はむ', 'help＞はむ', 'ヘルプ&gt;はむ', 'ヘルプ＞はむ']:
                 data = {
                     'username': username,
                     'icon_emoji': icon_emoji,
                     'channel': channel_id,
                     'text': '''はむ？ : スレッドに参上
 <キーワード>画像＞はむ : いらすとやから画像を検索
-アメダス[観測地点]＞はむ : アメダスでの現在の情報を表示''',
+アメダス[観測地点] : アメダスでの現在の情報を表示''',
                 }
                 if thread_ts:
                     data['thread_ts'] = thread_ts
@@ -158,29 +175,6 @@ def parse(sc, data):
                             }
                             results.append(attachment)
 
-                    if not results:
-                        # マストドン画像検索
-                        url = 'https://donsearch.me/?q=' + quote(word.encode('utf8'))
-                        r = None
-                        try:
-                            r = requests.get(url, timeout=3)
-                        except Exception as e:
-                            print(e)
-
-                        if r and r.status_code == 200:
-                            soup = BeautifulSoup(r.content, 'html.parser')
-                            imgs = soup.find_all(class_='media')
-                            for img in imgs:
-                                pic = img.get('data-echo', '')
-                                if pic:
-                                    attachment = {
-                                        'fallback': '[{}({})] {}'.format(word, len(imgs), pic),
-                                        'title': '[{}({})]'.format(word, len(imgs)),
-                                        'title_link': pic,
-                                        'image_url': pic,
-                                    }
-                                    results.append(attachment)
-
                         attachment = {
                             "fallback": "{} ハズレ".format(word),
                             "title": word,
@@ -206,7 +200,7 @@ def parse(sc, data):
             ame_prefix = 'アメダス'
             ame_suffix1 = '＞はむ'
             ame_suffix2 = '&gt;はむ'
-            if text.startswith(ame_prefix) and (text.endswith(ame_suffix1) or text.endswith(ame_suffix2)):
+            if text.startswith(ame_prefix):
                 loc = text.replace(ame_prefix, '').replace(ame_suffix1, '').replace(ame_suffix2, '')
                 amedas = subprocess.check_output(['amedas', loc]).decode('utf8').strip()
                 data = {
@@ -221,13 +215,16 @@ def parse(sc, data):
                 time.sleep(1)
 
             # URI処理
-            urls = re.findall('https?://(?:[^>]+)', text)
+            urls = re.findall('https?://(?:[^\|]+?)\|?.*?>', text)
+            print('urls', urls)
             for url in urls:
+                url = url.rstrip('>')
+                print('url', url)
                 scheme, netloc, path, params, query, fragment = urlparse(url)
                 ############################################################
                 # ようつべ、ニコニコ動画のURLをIRCに転送する
                 ############################################################
-                if netloc in ['www.youtube.com', 'youtu.be', 'www.nicovideo.jp', 'sp.nicovideo.jp']:
+                if netloc in ['www.youtube.com', 'm.youtube.com', 'youtu.be', 'www.nicovideo.jp', 'sp.nicovideo.jp']:
                     if channel_ids[channel_id] == 'ようつべ' and ikachan is not None:
                         res = requests.post(ikachan, data={'channel': '#ようつべ',
                                                            'message': '@{} {}'.format(user_ids[user_id], url),
@@ -249,6 +246,39 @@ def parse(sc, data):
                             data['thread_ts'] = thread_ts
                         sc.api_call('chat.postMessage', **data)
                         time.sleep(1)
+                if netloc.endswith('.2chan.net'):
+                    r = None
+                    try:
+                        r = requests.get(url, timeout=3)
+                    except Exception as e:
+                        print('exception', e)
+
+                    if r and r.status_code == 200:
+                        soup = BeautifulSoup(r.content, 'html.parser')
+                        img = None
+                        text = '\n'.join(soup.find('blockquote').strings)
+
+                        _as = soup.find_all('a')
+                        for a in _as:
+                            if a.get('href').startswith('/b/src/'):
+                                img = '/'.join(url.split('/')[:3]) + a.get('href')
+                                break
+                        if img:
+                            attachment = {
+                                'title_link': url,
+                                'text': text,
+                                'image_url': img,
+                            }
+                            data = {
+                                'username': username,
+                                'icon_emoji': icon_emoji,
+                                'channel': channel_id,
+                                'attachments': json.dumps([attachment]),
+                            }
+                            if thread_ts:
+                                data['thread_ts'] = thread_ts
+                            sc.api_call('chat.postMessage', **data)
+                            time.sleep(1)
 
 
 if __name__ == '__main__':
@@ -264,6 +294,9 @@ if __name__ == '__main__':
 
                     parse(sc, data)
         except WebSocketConnectionClosedException:
+            print('reconnecting..')
+            time.sleep(1)
+        except socket.error:
             print('reconnecting..')
             time.sleep(1)
         except KeyboardInterrupt:
