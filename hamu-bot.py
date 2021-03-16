@@ -65,7 +65,7 @@ def parse(sc, data):
         if isinstance(channel_id, (str, unicode)) and channel_id not in channel_ids:
             if channel_id.startswith('C'):
                 # channel
-                chan = sc.api_call('channels.info', channel=channel_id)
+                chan = sc.api_call('conversations.info', channel=channel_id)
                 if chan['ok'] is True:
                     channel_name = chan.get('channel', {}).get('name')
                     if channel_name is not None:
