@@ -293,6 +293,9 @@ if __name__ == '__main__':
                         continue
 
                     parse(sc, data)
+        except slackclient.server.SlackConnectionError:
+            print('reconnecting..')
+            time.sleep(1)
         except WebSocketConnectionClosedException:
             print('reconnecting..')
             time.sleep(1)
