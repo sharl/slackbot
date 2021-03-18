@@ -17,7 +17,7 @@ from random import random
 from urllib import quote
 import HTMLParser
 
-from slackclient import SlackClient
+import slackclient
 from websocket._exceptions import WebSocketConnectionClosedException
 
 import requests
@@ -283,7 +283,7 @@ def parse(sc, data):
 
 if __name__ == '__main__':
     while True:
-        sc = SlackClient(token)
+        sc = slackclient.SlackClient(token)
         try:
             if sc.rtm_connect():
                 while True:
