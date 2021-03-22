@@ -1,4 +1,4 @@
-#!/usr/bin/python2.7
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 from __future__ import unicode_literals
@@ -10,19 +10,15 @@ import socket
 from datetime import datetime
 import re
 import json
-from urlparse import urlparse
-# import urllib
+from urllib.parse import urlparse, quote
 import subprocess
 from random import random
-from urllib import quote
-import HTMLParser
+from html import unescape
 
 import slackclient
 from websocket._exceptions import WebSocketConnectionClosedException
 
 import requests
-# python 2.7.9 未満は insecure なので抑止
-requests.packages.urllib3.disable_warnings()
 from bs4 import BeautifulSoup
 
 #
@@ -52,7 +48,7 @@ def parse(sc, data):
         # detect user
         #
         user_id = item.get('user')
-        if isinstance(user_id, (str, unicode)) and user_id not in user_ids:
+        if isinstance(user_id, str) and user_id not in user_ids:
             user = sc.api_call('users.info', user=user_id)
             if user['ok'] is True:
                 user_name = user.get('user', {}).get('name')
@@ -62,7 +58,7 @@ def parse(sc, data):
         # detect channel
         #
         channel_id = item.get('channel')
-        if isinstance(channel_id, (str, unicode)) and channel_id not in channel_ids:
+        if isinstance(channel_id, str) and channel_id not in channel_ids:
             if channel_id.startswith('C'):
                 # channel
                 chan = sc.api_call('conversations.info', channel=channel_id)
@@ -111,7 +107,8 @@ def parse(sc, data):
                     'channel': channel_id,
                     'text': '''はむ？ : スレッドに参上
 <キーワード>画像＞はむ : いらすとやから画像を検索
-アメダス[観測地点] : アメダスでの現在の情報を表示''',
+アメダス[観測地点] : アメダスでの現在の情報を表示
+アメッシュ : アメッシュ画像を表示''',
                 }
                 if thread_ts:
                     data['thread_ts'] = thread_ts
@@ -159,29 +156,24 @@ def parse(sc, data):
                     _as = soup.find_all(class_='boxim')
                     for _a in _as:
                         link = _a.find('a').get('href').strip()
-                        pics = _a.text.strip()
-                        key = 'document.write(bp_thumbnail_resize'
-                        offset = 0
-                        if key in pics:
-                            offset = pics.index(key)
-                            tmp = pics[offset:].split('"')
-                            pic = tmp[1].replace('s72-c', 's400')
-                            dsc = HTMLParser.HTMLParser().unescape(tmp[3])
-                            attachment = {
-                                'fallback': '[{}({})] {}'.format(dsc, len(_as), link),
-                                'title': '[{}({})] {}'.format(word, len(_as), dsc),
-                                'title_link': link,
-                                'image_url': pic,
-                            }
-                            results.append(attachment)
-
+                        tmp = str(_a).split('"')
+                        pic = tmp[7].replace('s72-c', 's400')
+                        dsc = unescape(tmp[9])
                         attachment = {
-                            "fallback": "{} ハズレ".format(word),
-                            "title": word,
-                            "text": "ハズレ"
+                            'fallback': '[{}({})] {}'.format(dsc, len(_as), link),
+                            'title': '[{}({})] {}'.format(word, len(_as), dsc),
+                            'title_link': link,
+                            'image_url': pic,
                         }
-                        if results:
-                            attachment = results[int(len(results) * random())]
+                        results.append(attachment)
+
+                attachment = {
+                    "fallback": "{} ハズレ".format(word),
+                    "title": word,
+                    "text": "ハズレ"
+                }
+                if results:
+                    attachment = results[int(len(results) * random())]
 
                 data = {
                     'username': 'gazou ' + username,
@@ -214,8 +206,29 @@ def parse(sc, data):
                 sc.api_call('chat.postMessage', **data)
                 time.sleep(1)
 
+            ############################################################
+            # アメッシュ
+            ############################################################
+            if text == 'アメッシュ':
+                amesh = subprocess.check_output(['amesh', '-c'])
+                with open('/tmp/amesh.png', 'wb') as fd:
+                    fd.write(amesh)
+                data = {
+                    'username': username,
+                    'icon_emoji': icon_emoji,
+                    'channels': channel_id,
+                    #'content': amesh,
+                    #'filename': 'amesh.png',
+                    'file': open('/tmp/amesh.png', 'rb'),
+                    'filetype': 'png',
+                }
+                if thread_ts:
+                    data['thread_ts'] = thread_ts
+                sc.api_call('files.upload', **data)
+                time.sleep(1)
+
             # URI処理
-            urls = re.findall('https?://(?:[^\|]+?)\|?.*?>', text)
+            urls = re.findall('https?://(?:[^\|]+?)(?:\|.*)?>', text)
             print('urls', urls)
             for url in urls:
                 url = url.rstrip('>')
