@@ -3,6 +3,15 @@ hamu-bot
 
 sample script for slackbot
 
+## preinstall
+```
+git clone https://github.com/sharl/geeklets.git
+cp geeklets/.amedas ~
+cp geeklets/{amedas,amesh} ~/bin
+```
+
+- amesh use imagemagick
+
 ## prereq
 ```
 pip install --upgrade slackclient==1.3.2
