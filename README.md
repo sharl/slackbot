@@ -23,3 +23,9 @@ pip install bs4
 ```
 $ SLACK_TOKEN=xoxb-hogehoge ./hamu-bot.py
 ```
+
+## Appendix
+```
+docker build -t hamu-bot .
+docker run -d -e SLACK_TOKEN=xoxb-hogehoge hamu-bot
+```
