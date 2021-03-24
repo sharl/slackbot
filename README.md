@@ -14,8 +14,7 @@ cp geeklets/{amedas,amesh} ~/bin
 
 ## prereq
 ```
-pip install --upgrade slackclient==1.3.2
-pip install bs4
+pip install -r requirements.txt
 ```
 
 ## usage
