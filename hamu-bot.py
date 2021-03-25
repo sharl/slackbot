@@ -155,10 +155,10 @@ def parse(sc, data):
                     results = []
                     _as = soup.find_all(class_='boxim')
                     for _a in _as:
-                        link = _a.find('a').get('href').strip()
-                        tmp = str(_a).split('"')
-                        pic = tmp[7].replace('s72-c', 's400')
-                        dsc = unescape(tmp[9])
+                        tmp = str(_a.find('a')).split('"')
+                        link = tmp[1].strip()
+                        pic = tmp[5].replace('s72-c', 's400')
+                        dsc = unescape(tmp[7])
                         attachment = {
                             'fallback': '[{}({})] {}'.format(dsc, len(_as), link),
                             'title': '[{}({})] {}'.format(word, len(_as), dsc),
