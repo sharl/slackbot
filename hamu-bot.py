@@ -107,6 +107,7 @@ def parse(sc, data):
                     'channel': channel_id,
                     'text': '''はむ？ : スレッドに参上
 <キーワード>画像＞はむ : いらすとやから画像を検索
+<カテゴリー>選んで -> いらすとやから<カテゴリー>で画像検索
 アメダス[観測地点] : アメダスでの現在の情報を表示
 アメッシュ : アメッシュ画像を表示''',
                 }
@@ -177,6 +178,60 @@ def parse(sc, data):
 
                 data = {
                     'username': 'gazou ' + username,
+                    'icon_emoji': icon_emoji,
+                    'channel': channel_id,
+                    'attachments': json.dumps([attachment]),
+                }
+                if thread_ts:
+                    data['thread_ts'] = thread_ts
+                sc.api_call('chat.postMessage', **data)
+                time.sleep(1)
+
+            ##############################################################
+            # 食べ物選んで -> 「食べ物」を取り出してカテゴリーから画像検索
+            ##############################################################
+            category_suffix = '選んで'
+            if text.endswith(category_suffix):
+                category = text.replace(category_suffix, '').strip()
+                if len(category) == 0:
+                    continue
+
+                url = 'https://www.irasutoya.com/search/label/' + quote(category.encode('utf8')) + '?max-results=200'
+                r = None
+                try:
+                    r = requests.get(url, timeout=3)
+                except Exception as e:
+                    print(e)
+                    continue
+
+                if r and r.status_code == 200:
+                    soup = BeautifulSoup(r.content, 'html.parser')
+
+                    results = []
+                    _as = soup.find_all(class_='boxim')
+                    for _a in _as:
+                        tmp = str(_a.find('a')).split('"')
+                        link = tmp[1].strip()
+                        pic = tmp[5].replace('s72-c', 's400')
+                        dsc = unescape(tmp[7])
+                        attachment = {
+                            'fallback': '[{}({})] {}'.format(dsc, len(_as), link),
+                            'title': '[{}({})] {}'.format(category, len(_as), dsc),
+                            'title_link': link,
+                            'image_url': pic,
+                        }
+                        results.append(attachment)
+
+                attachment = {
+                    "fallback": "{} ハズレ".format(category),
+                    "title": category,
+                    "text": "ハズレ"
+                }
+                if results:
+                    attachment = results[int(len(results) * random())]
+
+                data = {
+                    'username': username,
                     'icon_emoji': icon_emoji,
                     'channel': channel_id,
                     'attachments': json.dumps([attachment]),
