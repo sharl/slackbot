@@ -287,6 +287,8 @@ def parse(sc, data):
             print('urls', urls)
             for url in urls:
                 url = url.rstrip('>')
+                if '|' in url and url.index('|') > 0:
+                    url = url.split('|')[0]
                 print('url', url)
                 scheme, netloc, path, params, query, fragment = urlparse(url)
                 ############################################################
