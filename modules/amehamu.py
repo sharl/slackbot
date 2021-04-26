@@ -76,3 +76,16 @@ class call:
                         sc.api_call('chat.postMessage', **data)
                     else:
                         print(data)
+            else:
+                data = {
+                    'username': keyword,
+                    'icon_emoji': icon_emoji,
+                    'channels': channel,
+                    'text': loc + 'のスポット情報取得に失敗しました',
+                }
+                if thread_ts:
+                    data['thread_ts'] = thread_ts
+                if sc:
+                    sc.api_call('chat.postMessage', **data)
+                else:
+                    print(data)
