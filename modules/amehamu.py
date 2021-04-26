@@ -30,7 +30,7 @@ class call:
                 root = ET.fromstring(r.text)
                 lat = None
                 lng = None
-                if root.find('./error') is None:
+                if root.find('./error') is None and root.find('./result/error') is None:
                     lat = root.find('./coordinate/lat').text
                     lng = root.find('./coordinate/lng').text
 
