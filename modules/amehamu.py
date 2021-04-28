@@ -67,7 +67,7 @@ class call:
                     data = {
                         'username': keyword,
                         'icon_emoji': icon_emoji,
-                        'channels': channel,
+                        'channel': channel,
                         'text': loc + 'は見つからなかったよ',
                     }
                     if thread_ts:
@@ -80,7 +80,7 @@ class call:
                 data = {
                     'username': keyword,
                     'icon_emoji': icon_emoji,
-                    'channels': channel,
+                    'channel': channel,
                     'text': loc + 'のスポット情報取得に失敗しました',
                 }
                 if thread_ts:
