@@ -1,7 +1,10 @@
-[
-   "amedas",
-   "amesh",
-   "amehamu",
-   "gazou",
-   "erande"
-]
+{
+    "amedas": null,
+    "amesh": null,
+    "amehamu": null,
+    "gazou": null,
+    "erande": null,
+    "same_reaction": [
+	"thinking_face"
+    ]
+}
