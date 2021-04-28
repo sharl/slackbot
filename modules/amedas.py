@@ -5,7 +5,7 @@ import subprocess
 class call:
     result = False
 
-    def __init__(self, item, sc=None, username='', icon_emoji='', channel=None):
+    def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, options=None):
         ame_prefix = 'アメダス'
 
         if item['type'] == 'message' and item.get('subtype', None) is None:

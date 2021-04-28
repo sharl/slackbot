@@ -14,7 +14,7 @@ class call:
     """
     result = False
 
-    def __init__(self, item, sc=None, username='', icon_emoji='', channel=None):
+    def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, options=None):
         img_suffix = '画像'
 
         if item['type'] == 'message' and item.get('subtype', None) is None:
