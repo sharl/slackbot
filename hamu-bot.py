@@ -82,6 +82,10 @@ def parse(sc, data):
             if channel_id not in channel_ids:
                 channel_ids[channel_id] = channel_id
         #
+        # 拡張機能
+        #
+        modules.call(item, sc=sc, username=username, icon_emoji=icon_emoji, channel=channel_id)
+        #
         # parse message text
         #
         if item_type == 'message' and item.get('subtype', None) is None:
@@ -95,9 +99,6 @@ def parse(sc, data):
                                          user_ids[user_id],
                                          text))
             ############################################################
-
-            # ここから機能
-            modules.call(text, sc=sc, username=username, icon_emoji=icon_emoji, channel=channel_id, thread_ts=thread_ts)
 
             ############################################################
             # はむhelp

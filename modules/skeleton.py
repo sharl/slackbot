@@ -2,5 +2,5 @@
 class call:
     result = False
 
-    def __init__(self, text, sc=None, username='', icon_emoji='', channel=None, thread_ts=None):
+    def __init__(self, item, sc=None, username='', icon_emoji='', channel=None):
         self.result = True

@@ -16,8 +16,8 @@ class LoadModules:
         except Exception:
             pass
 
-    def call(self, text, sc=None, username='', icon_emoji='', channel=None, thread_ts=None):
+    def call(self, item, sc=None, username='', icon_emoji='', channel=None):
         for m in self.modules:
-            r = self.modules[m].call(text, sc=sc, username=username, icon_emoji=icon_emoji, channel=channel, thread_ts=thread_ts).result
+            r = self.modules[m].call(item, sc=sc, username=username, icon_emoji=icon_emoji, channel=channel).result
             if r:
                 break
