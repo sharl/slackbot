@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 class call:
     result = False
 
-    def __init__(self, item, sc=None, username='', icon_emoji='', channel=None):
+    def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, options=None):
         keyword = 'あめはむ'
         zoom = '10'
 
@@ -67,27 +67,12 @@ class call:
                                     else:
                                         subprocess.call(['img2sixel', '/tmp/amehamu.png'])
                                     self.result = True
-                        else:
-                            data = {
-                                'username': keyword,
-                                'icon_emoji': icon_emoji,
-                                'channel': channel,
-                                'text': loc + 'は見つからなかったよ',
-                            }
-                            if thread_ts:
-                                data['thread_ts'] = thread_ts
-                            if sc:
-                                sc.api_call('chat.postMessage', **data)
-                            else:
-                                print(data)
-
-                            self.result = True
                     else:
                         data = {
                             'username': keyword,
                             'icon_emoji': icon_emoji,
                             'channel': channel,
-                            'text': loc + 'のスポット情報取得に失敗しました',
+                            'text': loc + 'は見つからなかったよ',
                         }
                         if thread_ts:
                             data['thread_ts'] = thread_ts
@@ -97,3 +82,18 @@ class call:
                             print(data)
 
                         self.result = True
+                else:
+                    data = {
+                        'username': keyword,
+                        'icon_emoji': icon_emoji,
+                        'channel': channel,
+                        'text': loc + 'のスポット情報取得に失敗しました',
+                    }
+                    if thread_ts:
+                        data['thread_ts'] = thread_ts
+                    if sc:
+                        sc.api_call('chat.postMessage', **data)
+                    else:
+                        print(data)
+
+                    self.result = True
