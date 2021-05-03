@@ -39,7 +39,7 @@ class call:
                         lng = root.find('./coordinate/lng').text
 
                     if lat and lng:
-                        r = requests.get('https://weather.yahoo.co.jp/weather/zoomradar/?lat={}&lon={}&z={}'.format(lat, lng, zoom))
+                        r = requests.get('https://weather.yahoo.co.jp/weather/zoomradar/rainsnow?lat={}&lon={}&z={}'.format(lat, lng, zoom))
                         if r and r.status_code == 200:
                             soup = BeautifulSoup(r.content, 'html.parser')
                             og_images = soup.find_all('meta', property="og:image")
