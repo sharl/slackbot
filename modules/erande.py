@@ -14,7 +14,7 @@ class call:
     """
     result = False
 
-    def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, options=None):
+    def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, user=None, caches={}, options=None):
         category_suffix = '選んで'
 
         if item['type'] == 'message' and item.get('subtype', None) is None:
