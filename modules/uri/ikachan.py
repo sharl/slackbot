@@ -26,7 +26,7 @@ class call:
                                 'channel': '#ようつべ',
                                 'message': '@{} {}'.format(caches.user_ids.get(user), p.geturl()),
                             }
-                            res = requests.post(ikachan, **data)
+                            res = requests.post(ikachan, data=data)
                             data = {
                                 'username': username,
                                 'icon_emoji': icon_emoji,
