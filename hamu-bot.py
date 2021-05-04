@@ -18,8 +18,9 @@ icon_emoji = ':hamster:'
 
 from modules import LoadModules, CACHES
 
-caches = CACHES()
 modules = LoadModules()
+caches = CACHES()
+caches.doc = modules.doc
 
 
 def parse(sc, data):
@@ -40,34 +41,10 @@ def parse(sc, data):
         channel_id = item.get('channel')
         caches.parseCID(sc, channel_id, user_id)
         #
-        # 拡張機能
+        # 機能
         #
         modules.call(item, sc=sc, username=username, icon_emoji=icon_emoji, channel=channel_id, user=user_id, caches=caches)
-        #
-        # parse message text
-        #
-        if item_type == 'message' and item.get('subtype', None) is None:
-            text = item['text']
-            thread_ts = item.get('thread_ts')
 
-            ############################################################
-            # はむhelp
-            ############################################################
-            if text.strip().replace(' ', '') in ['help&gt;はむ', 'help＞はむ', 'ヘルプ&gt;はむ', 'ヘルプ＞はむ']:
-                data = {
-                    'username': username,
-                    'icon_emoji': icon_emoji,
-                    'channel': channel_id,
-                    'text': '''はむ？ : スレッドに参上
-<キーワード>画像 : いらすとやから画像を検索
-<カテゴリー>選んで : いらすとやから<カテゴリー>で画像検索
-アメダス[観測地点] : アメダスでの現在の情報を表示
-アメッシュ : アメッシュ画像を表示''',
-                }
-                if thread_ts:
-                    data['thread_ts'] = thread_ts
-                sc.api_call('chat.postMessage', **data)
-                time.sleep(1)
 
 if __name__ == '__main__':
     token = os.environ.get('SLACK_TOKEN', None)

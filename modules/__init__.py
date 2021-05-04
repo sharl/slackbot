@@ -6,15 +6,21 @@ import importlib
 class LoadModules:
     modules = {}
     options = {}
+    doc = ''
 
     def __init__(self):
         try:
             with open('config.json') as fd:
                 mods = json.load(fd)
-            for module in mods:
+            docs = []
+            for module in sorted(mods):
                 m = importlib.import_module('modules.{}'.format(module))
                 self.modules[module] = m
                 self.options[module] = mods[module]
+                doc = m.call.__doc__
+                if doc:
+                    docs.append(doc)
+            self.doc = '\n'.join(docs)
         except Exception:
             pass
 
@@ -30,6 +36,7 @@ class CACHES:
     channel_ids = {}
     # 問い合わせを減らすためのユーザIDキャッシュ
     user_ids = {}
+    doc = ''
 
     def __init__(self):
         pass
