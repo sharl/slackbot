@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 class call:
+    """はむ? : はむをスレッドに呼ぶ"""
     result = False
 
     def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, user=None, caches={}, options=None):

@@ -8,6 +8,7 @@ from bs4 import BeautifulSoup
 
 
 class call:
+    """あめはむ[地点] : 降水状況を表示"""
     result = False
 
     def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, user=None, caches={}, options=None):

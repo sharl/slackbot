@@ -9,9 +9,7 @@ from bs4 import BeautifulSoup
 
 
 class call:
-    """
-    うどん画像 -> 「うどん」を取り出して画像検索
-    """
+    """[キーワード]画像 : キーワードで画像検索"""
     result = False
 
     def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, user=None, caches={}, options=None):

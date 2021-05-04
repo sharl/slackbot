@@ -3,6 +3,7 @@ import subprocess
 
 
 class call:
+    """アメッシュ : アメッシュ画像を表示"""
     result = False
 
     def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, user=None, caches={}, options=None):
