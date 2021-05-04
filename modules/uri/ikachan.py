@@ -18,7 +18,7 @@ class call:
 
             uri = URI(text)
             for p in uri.parsed:
-                if p.netloc in ['www.youtube.com', 'm.youtube.com', 'youtu.be', 'www.nicovideo.jp', 'sp.nicovideo.jp', 'gyao.yahoo.co.jp']:
+                if p.netloc in ['www.youtube.com', 'm.youtube.com', 'youtube.com', 'youtu.be', 'www.nicovideo.jp', 'sp.nicovideo.jp', 'gyao.yahoo.co.jp']:
                     ikachan = os.environ.get('IKACHAN')
                     if caches.channel_ids.get(channel) == 'ようつべ' and ikachan is not None:
                         if sc:
