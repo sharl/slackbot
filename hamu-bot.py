@@ -16,10 +16,10 @@ username = 'hamu'
 icon_emoji = ':hamster:'
 
 
-from modules import LoadModules, CACHES
+from modules import LoadModules, Caches
 
 modules = LoadModules()
-caches = CACHES()
+caches = Caches()
 caches.doc = modules.doc
 
 

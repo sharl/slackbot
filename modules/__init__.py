@@ -31,7 +31,7 @@ class LoadModules:
                 break
 
 
-class CACHES:
+class Caches:
     # 問い合わせを減らすためのチャンネルIDキャッシュ
     channel_ids = {}
     # 問い合わせを減らすためのユーザIDキャッシュ
