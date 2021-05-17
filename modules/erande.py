@@ -9,7 +9,9 @@ from bs4 import BeautifulSoup
 
 
 class call:
-    """[カテゴリー]選んで : カテゴリーから画像検索"""
+    """[カテゴリー]選んで : カテゴリーから画像検索
+選んでヘルプ : カテゴリー一覧を表示
+選んでhelp : カテゴリー一覧を表示"""
     result = False
 
     def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, user=None, caches={}, options=None):
@@ -63,6 +65,35 @@ class call:
                         'icon_emoji': icon_emoji,
                         'channel': channel,
                         'attachments': json.dumps([attachment]),
+                    }
+                    if thread_ts:
+                        data['thread_ts'] = thread_ts
+                    if sc:
+                        sc.api_call('chat.postMessage', **data)
+                    else:
+                        print(data)
+
+                    self.result = True
+            elif text in ['選んでhelp', '選んでヘルプ']:
+                r = None
+                try:
+                    r = requests.get('https://www.irasutoya.com/', timeout=3)
+                except Exception as e:
+                    print(e)
+                    return
+
+                if r and r.status_code == 200:
+                    soup = BeautifulSoup(r.content, 'html.parser')
+                    results = []
+
+                    _adir = soup.find_all('a', dir='ltr')
+                    for a in _adir:
+                        results.append(a.text)
+                    data = {
+                        'username': username,
+                        'icon_emoji': icon_emoji,
+                        'channel': channel,
+                        'text': '```{}```'.format(' '.join(results)),
                     }
                     if thread_ts:
                         data['thread_ts'] = thread_ts
