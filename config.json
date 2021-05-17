@@ -9,6 +9,13 @@
     "gazou": null,
     "erande": null,
     "uri.ikachan": null,
+    "images": {
+	"interval": 3600,
+	"keywords": {
+	    "emacs": ["http://cvs.savannah.gnu.org/viewvc/emacs/emacs/etc/images/icons/hicolor/128x128/apps/emacs.png?view=markup"],
+	    "vim": ["https://upload.wikimedia.org/wikipedia/commons/1/12/Vimlogo.png"]
+	}
+    },
     "same_reaction": [
 	"thinking_face"
     ]
