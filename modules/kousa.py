@@ -12,7 +12,6 @@ class call:
 
     def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, user=None, caches={}, options=None):
         keyword = '黄砂'
-        zoom = '10'
 
         if item['type'] == 'message' and item.get('subtype', None) is None:
             text = item['text']
