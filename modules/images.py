@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 import json
 from random import random
 import time
@@ -18,7 +19,7 @@ class call:
 
             now = time.time()
             for k in options['keywords']:
-                if k in text and now - timer.timer > options['interval']:
+                if re.search(k, text) and now - timer.timer > options['interval']:
                     images = options['keywords'][k]
                     attachment = {
                         'title': '',
