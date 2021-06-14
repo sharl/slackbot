@@ -5,11 +5,16 @@
     "amedas": null,
     "amesh": null,
     "amehamu": null,
+    "kousa": null,
     "thunder": null,
+    "typhonn": null,
     "gazou": null,
     "erande": null,
     "uri.ikachan": null,
     "uri.lyrics": null,
+    "reactions": {
+        "ロボ": "robot_face"
+    },
     "images": {
 	"interval": 3600,
 	"keywords": {
