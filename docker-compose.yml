@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  hamu-bot:
+    container_name: hamu-bot
+    build: ./
+    volumes:
+      - type: bind
+        source: "./conf"
+        target: "/conf"
+    environment:
+      AMEDAS:
+      SLACK_TOKEN:

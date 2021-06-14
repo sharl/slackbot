@@ -5,7 +5,6 @@ ENV TZ Asia/Tokyo
 RUN apt-get update && apt-get -y upgrade && apt-get install -y git jq imagemagick
 COPY hamu-bot.py .
 COPY requirements.txt .
-COPY config.json .
 COPY modules modules/
 
 # preinstall
