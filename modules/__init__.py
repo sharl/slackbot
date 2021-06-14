@@ -9,7 +9,7 @@ class LoadModules:
     doc = ''
 
     def __init__(self):
-        with open('config.json') as fd:
+        with open('./conf/config.json') as fd:
             mods = json.load(fd)
         docs = []
         for module in sorted(mods):
