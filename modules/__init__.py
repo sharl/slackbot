@@ -9,20 +9,17 @@ class LoadModules:
     doc = ''
 
     def __init__(self):
-        try:
-            with open('config.json') as fd:
-                mods = json.load(fd)
-            docs = []
-            for module in sorted(mods):
-                m = importlib.import_module('modules.{}'.format(module))
-                self.modules[module] = m
-                self.options[module] = mods[module]
-                doc = m.call.__doc__
-                if doc:
-                    docs.append(doc)
-            self.doc = '\n'.join(docs)
-        except Exception:
-            pass
+        with open('config.json') as fd:
+            mods = json.load(fd)
+        docs = []
+        for module in sorted(mods):
+            m = importlib.import_module('modules.{}'.format(module))
+            self.modules[module] = m
+            self.options[module] = mods[module]
+            doc = m.call.__doc__
+            if doc:
+                docs.append(doc)
+        self.doc = '\n'.join(docs)
 
     def call(self, item, sc=None, username='', icon_emoji='', channel=None, user=None, caches={}):
         for m in sorted(self.modules):
