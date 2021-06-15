@@ -28,3 +28,22 @@ $ SLACK_TOKEN=xoxb-hogehoge ./hamu-bot.py
 docker-compose build
 SLACK_TOKEN=xoxb-hogehoge docker-compose up -d
 ```
+
+## DB module
+
+- initialize
+```
+./initdb.py init
+```
+to create table.
+
+### name_history
+
+- config.json
+```
+{
+    "name_history": {
+	"keyword": "email address"
+    }
+}
+```
