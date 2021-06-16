@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import os
 import sqlite3
 
-DB_NAME = './conf/name_history.db'
+DB_NAME = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'conf', 'name_history.db'))
 
 
 class call:
