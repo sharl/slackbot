@@ -24,7 +24,7 @@ class call:
                 if len(word) == 0:
                     return
 
-                url = 'http://www.irasutoya.com/search?q=' + quote(word.encode('utf8'))
+                url = 'http://www.irasutoya.com/search?max-results=200&q=' + quote(word.encode('utf8'))
                 r = None
                 try:
                     r = requests.get(url, timeout=3)
