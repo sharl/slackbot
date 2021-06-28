@@ -25,7 +25,7 @@ $ SLACK_TOKEN=xoxb-hogehoge ./hamu-bot.py
 
 ## Appendix
 ```
-docker-compose build
+make
 SLACK_TOKEN=xoxb-hogehoge docker-compose up -d
 ```
 

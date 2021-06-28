@@ -9,3 +9,5 @@ services:
     environment:
       AMEDAS:
       SLACK_TOKEN:
+      UID:
+      GID:

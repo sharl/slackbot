@@ -2,7 +2,7 @@ from python:latest
 
 ENV TZ Asia/Tokyo
 
-RUN apt-get update && apt-get -y upgrade && apt-get install -y git jq imagemagick
+RUN apt-get update && apt-get -y upgrade && apt-get install -y gosu git jq imagemagick
 COPY hamu-bot.py .
 COPY requirements.txt .
 COPY modules modules/
@@ -15,4 +15,5 @@ RUN cp geeklets/amedas geeklets/amesh /usr/local/bin
 # prereq
 RUN pip3 install -r requirements.txt
 
-CMD python3 ./hamu-bot.py
+COPY entrypoint.sh .
+ENTRYPOINT ["./entrypoint.sh"]
