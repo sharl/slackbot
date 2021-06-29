@@ -1,6 +1,6 @@
 all: build
 
-build:
+build: .env
 	docker-compose build
 
 .env: env
