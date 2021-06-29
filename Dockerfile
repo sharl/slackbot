@@ -9,8 +9,8 @@ COPY modules modules/
 
 # preinstall
 RUN git clone https://github.com/sharl/geeklets.git
-RUN cp geeklets/.amedas ~
 RUN mkdir -p /usr/local/bin
+RUN mkdir -p /var/tmp
 RUN cp geeklets/amedas geeklets/amesh /usr/local/bin
 # prereq
 RUN pip3 install -r requirements.txt
