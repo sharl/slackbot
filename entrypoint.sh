@@ -6,6 +6,6 @@ USER=hamu
 
 groupadd -g ${GID} ${USER}
 useradd  -g ${GID} -u ${UID} -m ${USER}
-cp geeklets/.amedas ~${USER}
+cp geeklets/.amedas /home/${USER}
 
 exec gosu ${USER} python3 ./hamu-bot.py
