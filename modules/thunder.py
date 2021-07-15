@@ -20,7 +20,7 @@ class call:
             thread_ts = item.get('thread_ts')
 
             if text.startswith(keyword):
-                loc = text.replace(keyword, '')
+                loc = text.replace(keyword, '').strip()
                 if ' ' in loc:
                     loc, zoom = loc.split(' ')
                 if not loc:
