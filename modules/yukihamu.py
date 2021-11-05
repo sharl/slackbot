@@ -8,11 +8,11 @@ from bs4 import BeautifulSoup
 
 
 class call:
-    """サンダー[地点] : 落雷状況を表示"""
+    """ゆきはむ[地点] : 降水/降雪状況を表示"""
     result = False
 
     def __init__(self, item, sc=None, username='', icon_emoji='', channel=None, user=None, caches={}, options=None):
-        keyword = 'サンダー'
+        keyword = 'ゆきはむ'
         zoom = '10'
 
         if item['type'] == 'message' and item.get('subtype', None) is None:
@@ -40,7 +40,7 @@ class call:
                         lng = root.find('./coordinate/lng').text
 
                     if lat and lng:
-                        r = requests.get('https://weather.yahoo.co.jp/weather/zoomradar/lightning?lat={}&lon={}&z={}'.format(lat, lng, zoom))
+                        r = requests.get('https://weather.yahoo.co.jp/weather/zoomradar/rainsnow?lat={}&lon={}&z={}'.format(lat, lng, zoom))
                         if r and r.status_code == 200:
                             soup = BeautifulSoup(r.content, 'html.parser')
                             og_images = soup.find_all('meta', property="og:image")

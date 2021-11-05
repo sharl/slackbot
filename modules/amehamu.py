@@ -29,7 +29,7 @@ class call:
                 loc = loc.strip()
                 zoom = zoom.strip()
                 url = 'https://www.geocoding.jp/api/?q=' + quote(loc.encode('utf8'))
-                r = requests.get(url, timeout=10)
+                r = requests.get(url, timeout=10, verify=False)
                 if r and r.status_code == 200:
                     print(r.text.strip())
                     root = ET.fromstring(r.text)
@@ -40,7 +40,7 @@ class call:
                         lng = root.find('./coordinate/lng').text
 
                     if lat and lng:
-                        r = requests.get('https://weather.yahoo.co.jp/weather/zoomradar/rainsnow?lat={}&lon={}&z={}'.format(lat, lng, zoom))
+                        r = requests.get('https://weather.yahoo.co.jp/weather/zoomradar/?lat={}&lon={}&z={}'.format(lat, lng, zoom))
                         if r and r.status_code == 200:
                             soup = BeautifulSoup(r.content, 'html.parser')
                             og_images = soup.find_all('meta', property="og:image")
