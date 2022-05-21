@@ -47,3 +47,14 @@ to create table.
     }
 }
 ```
+
+### switchbot.meter
+
+- config.json
+```
+    "switchbot.meter": {
+        "keyword": "wake word",
+        "token": "<developer token>",
+        "device": "<device ID>"
+    }
+```
