@@ -58,3 +58,15 @@ to create table.
         "device": "<device ID>"
     }
 ```
+
+### switchbot.plug
+
+- config.json
+```
+    "switchbot.plug": {
+        "on": "on wake word",
+        "off": "off wake word",
+        "token": "<developer token>",
+        "device": "<device ID>"
+    }
+```
