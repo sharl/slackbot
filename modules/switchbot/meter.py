@@ -23,12 +23,13 @@ class call:
                     if r and r.status_code == 200:
                         j = json.loads(r.text)
                         temp = j.get("body").get("temperature")
-                        if temp:
+                        humi = j.get("body").get("humidity")
+                        if temp and humi:
                             data = {
                                 'username': "{}'s {}".format(ouser, keyword),
                                 'icon_emoji': icon_emoji,
                                 'channel': channel,
-                                'text': str(temp),
+                                'text': '{}C {}%'.format(temp, humi),
                             }
                             if thread_ts:
                                 data['thread_ts'] = thread_ts
