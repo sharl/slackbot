@@ -41,11 +41,9 @@ to create table.
 
 - config.json
 ```
-{
     "name_history": {
-	"keyword": "email address"
+        "keyword": "email address"
     }
-}
 ```
 
 ### switchbot.meter
@@ -54,6 +52,7 @@ to create table.
 ```
     "switchbot.meter": {
         "keyword": "wake word",
+        "user": "user name (NOT display name)",
         "token": "<developer token>",
         "device": "<device ID>"
     }
@@ -66,6 +65,7 @@ to create table.
     "switchbot.plug": {
         "on": "on wake word",
         "off": "off wake word",
+        "user": "user name (NOT display name)",
         "token": "<developer token>",
         "device": "<device ID>"
     }

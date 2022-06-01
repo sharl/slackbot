@@ -13,7 +13,8 @@ class call:
 
             if isinstance(options, dict):
                 keyword = options["keyword"]
-                if text == keyword:
+                ouser = options["user"]
+                if text == keyword and caches.user_ids[user] == ouser:
                     token = options["token"]
                     device = options["device"]
 
@@ -24,7 +25,7 @@ class call:
                         temp = j.get("body").get("temperature")
                         if temp:
                             data = {
-                                'username': keyword,
+                                'username': "{}'s {}".format(ouser, keyword),
                                 'icon_emoji': icon_emoji,
                                 'channel': channel,
                                 'text': str(temp),

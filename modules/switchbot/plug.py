@@ -12,7 +12,8 @@ class call:
             if isinstance(options, dict):
                 on = options['on']
                 off = options['off']
-                if text == on or text == off:
+                ouser = options["user"]
+                if (text == on or text == off) and caches.user_ids[user] == ouser:
                     token = options['token']
                     device = options['device']
                     commands = {
